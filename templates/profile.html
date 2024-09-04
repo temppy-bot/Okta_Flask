@@ -1,0 +1,34 @@
+{% extends "template.html" %}
+
+{% block content %}
+<div>
+    <h2>My Profile</h2>
+    <p>Hello, <span>{{ user.email }}</span>. Below is the information that was read with your <a
+            href="https://developer.okta.com/docs/api/resources/oidc.html#get-user-information"
+            target="_blank">Access Token</a>.
+    </p>
+    <div style="width:800px; height:600px;">
+        <iframe src="https://10ay.online.tableau.com/t/philcfde544a1e/views/Superstore/Overview?:origin=card_share_link&:showVizHome=no&:embed=true" width="645" height="955"></iframe>
+    </div>
+
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Claim</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for key, claim in user.claims() %}
+    <tr>
+        <td>{{ key }}</td>
+        <td id="claim-{{ key }}">
+            {{ claim }}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

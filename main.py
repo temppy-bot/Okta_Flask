@@ -1,7 +1,7 @@
 import requests
 import random
 import string
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, jsonify
 from flask_login import (
     LoginManager,
     current_user,
@@ -12,7 +12,9 @@ from flask_login import (
 
 from helpers import is_access_token_valid, is_id_token_valid, config
 from user import User
-
+import datetime
+import uuid
+import jwt # type: ignore
 
 app = Flask(__name__)
 app.config.update({'SECRET_KEY': ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=32))})
@@ -24,6 +26,15 @@ login_manager.init_app(app)
 APP_STATE = 'ApplicationState'
 NONCE = 'SampleNonce'
 
+secretId = "ea8a889f-0c9c-4044-b3cb-f7e7e1574ed9"
+secretValue = "8zi6UsnFasZnwy4hhj5/4vBRzAC7aUWy8Av9nfwHy9M="
+clientId = "c0a2f4b9-d484-4573-9452-1f95ad3cc3ce"
+
+@app.after_request  
+def apply_csp(response):  
+    csp_policy = "frame-ancestors 'self' https://10ay.online.tableau.com"  
+    response.headers['Content-Security-Policy'] = csp_policy  
+    return response
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -59,6 +70,32 @@ def login():
 @login_required
 def profile():
     return render_template("profile.html", user=current_user)
+
+@app.route('/get_jwt_token', methods=['POST'])
+@login_required
+def get_jwt_token():  
+    user_email = request.json.get('email')  # Fetch the email from the request  
+
+    if not user_email:  
+        return jsonify({"error": "Email is required"}), 400  
+
+    # Generate the JWT token  
+    payload = {
+        "iss": clientId,  
+        "sub": user_email,  
+        "aud": "tableau",  
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15),  
+        "nbf": datetime.datetime.utcnow(),  
+        "jti": str(uuid.uuid4()),
+        "scp": ["tableau:views:embed"]  
+    }  
+
+    token = jwt.encode(payload, secretValue, headers={
+            "kid": secretId,
+            "iss": clientId,
+            "alg": "HS256",
+        })  
+    return jsonify({"token": token})  
 
 
 @app.route("/oidc/callback")

@@ -4,15 +4,81 @@
 <div>
     <h2>My Profile</h2>
     <p>Hello, <span>{{ user.email }}</span>. Below is the information that was read with your <a
-            href="https://developer.okta.com/docs/api/resources/oidc.html#get-user-information"
-            target="_blank">Access Token</a>.
+            href="https://developer.okta.com/docs/api/resources/oidc.html#get-user-information" target="_blank">Access Token</a>.
     </p>
-    <div style="width:800px; height:600px;">
-        <iframe src="https://10ay.online.tableau.com/t/philcfde544a1e/views/Superstore/Overview?:origin=card_share_link&:showVizHome=no&:embed=true" width="645" height="955"></iframe>
-    </div>
 
+    <!-- Tableau Embedded Content (commented out for now) -->
+    <!--
+    <div style="width:800px; height:600px;">
+        <iframe src="https://10ay.online.tableau.com/t/philcfde544a1e/views/Superstore/Overview?:origin=card_share_link&:showVizHome=no&:embed=true" width="1200" height="600"></iframe>
+    </div>
+    -->
+  
+    <!-- Placeholder div for dynamic Tableau content -->
+    <div id="tableau-container"></div>
+  
+    <!-- Load Tableau Embedding JavaScript API -->
+    <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+  
+    <!-- JavaScript for fetching JWT token and initializing Tableau visualization -->
+    <script type="text/javascript">  
+        // Function to fetch JWT token using the user's email
+        async function fetchJwtToken(email) {
+            try {
+                const response = await fetch('/get_jwt_token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}' // CSRF token for security
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                return data.token; // Return JWT token
+            } catch (error) {
+                console.error('An error occurred:', error);
+            }
+        }
+
+        // Function to initialize Tableau visualization
+        async function initViz() {
+            let email = "{{ user.email }}"; // Get user's email
+            let token = await fetchJwtToken(email); // Fetch JWT token
+            
+            if (!token) {
+                console.error('Token retrieval failed.');
+                return;
+            }
+
+            // Construct the Tableau URL with the JWT token
+            let url = `https://10ay.online.tableau.com/t/philcfde544a1e/views/WorldIndicators/CareSpend?:embed=yes&:authorize=y&:embed_token=${encodeURIComponent(token)}&:showVizHome=n&:tabs=n&:apiID=host0#navType=0&navSrc=Parse`;
+
+            // Get the div container for the Tableau visualization
+            var containerDiv = document.getElementById("tableau-container");
+
+            // Create a new Tableau viz element and set its properties
+            var tableauViz = document.createElement('tableau-viz');
+            tableauViz.id = 'tableauViz';
+            tableauViz.src = "https://10ay.online.tableau.com/t/philcfde544a1e/views/WorldIndicators/CareSpend";
+            tableauViz.token = token;
+            containerDiv.appendChild(tableauViz); // Append the Tableau viz element to the container
+        }
+
+        // Initialize Tableau viz when the document is fully loaded
+        document.addEventListener("DOMContentLoaded", initViz);
+    </script>  
 </div>
 
+<!-- Placeholder for Tableau visualization -->
+<div id="tableau-container">
+</div>
+
+<!-- Table to display user's claims -->
 <table class="table table-striped">
     <thead>
     <tr>
@@ -21,6 +87,7 @@
     </tr>
     </thead>
     <tbody>
+    <!-- Iterate through user claims and display them in a table -->
     {% for key, claim in user.claims() %}
     <tr>
         <td>{{ key }}</td>

@@ -6,13 +6,6 @@
     <p>Hello, <span>{{ user.email }}</span>. Below is the information that was read with your <a
             href="https://developer.okta.com/docs/api/resources/oidc.html#get-user-information" target="_blank">Access Token</a>.
     </p>
-
-    <!-- Tableau Embedded Content (commented out for now) -->
-    <!--
-    <div style="width:800px; height:600px;">
-        <iframe src="https://10ay.online.tableau.com/t/philcfde544a1e/views/Superstore/Overview?:origin=card_share_link&:showVizHome=no&:embed=true" width="1200" height="600"></iframe>
-    </div>
-    -->
   
     <!-- Placeholder div for dynamic Tableau content -->
     <div id="tableau-container"></div>
@@ -54,9 +47,6 @@
                 console.error('Token retrieval failed.');
                 return;
             }
-
-            // Construct the Tableau URL with the JWT token
-            let url = `https://10ay.online.tableau.com/t/philcfde544a1e/views/WorldIndicators/CareSpend?:embed=yes&:authorize=y&:embed_token=${encodeURIComponent(token)}&:showVizHome=n&:tabs=n&:apiID=host0#navType=0&navSrc=Parse`;
 
             // Get the div container for the Tableau visualization
             var containerDiv = document.getElementById("tableau-container");

@@ -11,7 +11,7 @@
     <div id="tableau-container"></div>
   
     <!-- Load Tableau Embedding JavaScript API -->
-    <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+    <script type="module" src="https://data-test.graphgenie.app/javascripts/api/tableau.embedding.3.latest.min.js"></script>
   
     <!-- JavaScript for fetching JWT token and initializing Tableau visualization -->
     <script type="text/javascript">  
@@ -54,7 +54,7 @@
             // Create a new Tableau viz element and set its properties
             var tableauViz = document.createElement('tableau-viz');
             tableauViz.id = 'tableauViz';
-            tableauViz.src = "https://10ay.online.tableau.com/t/philcfde544a1e/views/WorldIndicators/CareSpend";
+            tableauViz.src = "https://data-test.graphgenie.app/t/philcfde544a1e/views/WorldIndicators/GlobalIndicators";
             tableauViz.token = token;
             containerDiv.appendChild(tableauViz); // Append the Tableau viz element to the container
         }

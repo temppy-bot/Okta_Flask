@@ -52,7 +52,7 @@ def apply_csp(response):
     """
     
     # Define the CSP policy to only allow framing from the same origin ('self') and a specific Tableau online domain.
-    csp_policy = "frame-ancestors 'self' https://10ay.online.tableau.com"
+    csp_policy = "frame-ancestors 'self' https://data-test.graphgenie.app"
     
     # Set the 'Content-Security-Policy' header in the response to the defined policy.
     response.headers['Content-Security-Policy'] = csp_policy
@@ -156,6 +156,7 @@ def callback():
     userinfo_response = requests.get(config["userinfo_uri"],
                                      headers={'Authorization': f'Bearer {access_token}'}).json()
 
+
     unique_id = userinfo_response["sub"]
     user_email = userinfo_response["email"]
     user_name = userinfo_response["given_name"]
@@ -181,4 +182,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8002, debug=True)
-
